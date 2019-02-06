@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set('Europe/Moscow');
 $is_auth = rand(0, 1);
 
 function filter_tags(string $str = null): string {
@@ -29,4 +29,11 @@ function include_template($name, $data) {
     $result = ob_get_clean();
 
     return $result;
+};
+
+function time_left(): string {
+    $now = date_create('now');
+    $deadline = date_create('tomorrow');
+    $diff = date_diff($now, $deadline);
+    return date_interval_format($diff,"%H:%I");
 };
