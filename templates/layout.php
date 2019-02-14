@@ -8,7 +8,6 @@
 </head>
 <body>
 <div class="page-wrapper">
-
     <header class="main-header">
         <div class="main-header__container container">
             <h1 class="visually-hidden">YetiCave</h1>
@@ -22,7 +21,7 @@
             <a class="main-header__add-lot button" href="pages/add-lot.html">Добавить лот</a>
 
             <nav class="user-menu">
-                <?php if ($is_auth): ?>
+                <?php if (isset($is_auth)): ?>
                     <div class="user-menu__logged">
                         <p><?= $user_name; ?></p>
                     </div>
@@ -49,7 +48,7 @@
         <ul class="nav__list container">
             <?php foreach ($cats as $cat): ?>
                 <li class="nav__item">
-                    <a href="pages/all-lots.html"><?= filter_tags($cat); ?></a>
+                    <a href="pages/all-lots.html"><?= $cat['name']; ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>
