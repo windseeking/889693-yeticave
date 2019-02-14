@@ -5,7 +5,7 @@
     <ul class="promo__list">
         <?php foreach ($cats as $cat): ?>
             <li class="promo__item promo__item--boards">
-                <a class="promo__link" href="pages/all-lots.html"><?= filter_tags($cat); ?></a>
+                <a class="promo__link" href="pages/all-lots.html"><?= filter_tags($cat['name']); ?></a>
             </li>
         <?php endforeach; ?>
     </ul>
@@ -28,7 +28,7 @@
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span class="lot__amount">Стартовая цена</span>
-                            <span class="lot__cost"><?= format_cost($lot['cost']); ?></span>
+                            <span class="lot__cost"><?= format_cost($lot['opening_price']); ?></span>
                         </div>
                         <div class="lot__timer timer">
                             <?= time_left() ;?>
