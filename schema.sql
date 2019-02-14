@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `lot`
 CREATE TABLE IF NOT EXISTS `stake`
 (
   `id`          int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `created_at`  timestamp    NOT NULL,
+  `created_at`  timestamp    DEFAULT CURRENT_TIMESTAMP NOT NULL,
   `buyer_price` int unsigned NOT NULL,
   `buyer_id`    int unsigned NOT NULL,
   `lot_id`      int unsigned NOT NULL,
