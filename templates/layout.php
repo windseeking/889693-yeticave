@@ -11,7 +11,7 @@
     <header class="main-header">
         <div class="main-header__container container">
             <h1 class="visually-hidden">YetiCave</h1>
-            <a class="main-header__logo">
+            <a class="main-header__logo" href="index.php">
                 <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
             </a>
             <form class="main-header__search" method="get" action="https://echo.htmlacademy.ru">
@@ -23,7 +23,7 @@
             <nav class="user-menu">
                 <?php if (isset($is_auth)): ?>
                     <div class="user-menu__logged">
-                        <p><?= $user_name; ?></p>
+                        <p><?= filter_tags($user_name); ?></p>
                     </div>
                 <?php else: ?>
                     <ul class="user-menu__list">
