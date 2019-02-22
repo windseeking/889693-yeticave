@@ -13,7 +13,7 @@ VALUES ('Доски и лыжи'),
        ('Инструменты'),
        ('Разное');
 
-INSERT INTO lot (title, description, image_url, cat_id, opening_price, ends_at, bid_step, author_id)
+INSERT INTO lot (title, description, img_url, cat_id, opening_price, ends_at, bid_step, author_id)
 VALUES ('2014 Rossignol District Snowboard', 'description', 'img/lot-1.jpg', '1', '10999', '2019-02-22', '100', '1'),
        ('DC Ply Mens 2016/2017 Snowboard', 'description', 'img/lot-2.jpg', '1', '159999', '2018-03-03', '200', '2'),
        ('Крепления Union Contact Pro 2015 года размер L/XL', 'description', 'img/lot-3.jpg', '2', '8000', '2019-04-05', '300',

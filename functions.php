@@ -5,6 +5,37 @@ date_default_timezone_set('Europe/Moscow');
 $is_auth = rand(0, 1);
 
 /**
+ * @param $con
+ * @param array $lot
+ * @param int $user_id
+ * @return bool
+ */
+function add_lot($con, array $lot, int $user_id): bool
+{
+    $sql =
+        'INSERT INTO lot (title, description, img_url, cat_id, opening_price, ends_at, bid_step, created_at, author_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)';
+    $values = [
+        $lot['title'] = filter_tags($lot['title']),
+        $lot['description'] = filter_tags($lot['description']),
+        $lot['img_url'],
+        $lot['cat_id'],
+        $lot['opening_price'],
+        $lot['ends_at'],
+        $lot['bid_step'],
+        $lot['created_at'],
+        $user_id
+    ];
+    $stmt = db_get_prepare_stmt($con, $sql, $values);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_error($con)) {
+        return mysqli_error($con);
+    }
+    return true;
+}
+
+/**
  * @param string|null $str
  * @return string
  */
@@ -60,12 +91,13 @@ function get_lots($con): array
  * @param int $lot_id
  * @return array|bool|null
  */
-function get_lot_by_id($con, int $lot_id) {
+function get_lot_by_id($con, int $lot_id)
+{
     $sql = 'SELECT l.*,
             c.name AS cat_name
             FROM lot l
             JOIN cat c ON c.id = l.cat_id
-            WHERE l.id = ' . $lot_id .';';
+            WHERE l.id = ' . $lot_id . ';';
     $res = mysqli_query($con, $sql);
     if ($res) {
         return mysqli_fetch_assoc($res);
@@ -77,7 +109,7 @@ function get_lot_by_id($con, int $lot_id) {
  * @param float $cost
  * @return string
  */
-function format_cost($cost): string
+function format_cost(float $cost): string
 {
     $cost = ceil($cost);
     if ($cost >= 1000) {
@@ -107,6 +139,47 @@ function include_template($name, $data)
     $result = ob_get_clean();
 
     return $result;
+}
+
+/**
+ * @param array $cats
+ * @param array $lot
+ * @return bool
+ */
+function is_cat_exists(array $cats, array $lot): bool
+{
+    foreach ($cats as $cat) {
+        if ($cat['id'] == $lot['cat_id']) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * @param string $date
+ * @param string $format
+ * @return bool
+ */
+function is_valid_date_format(string $date, string $format = 'Y-m-d'): bool
+{
+    $d = DateTime::createFromFormat($format, $date);
+    return $d && $d->format($format) == $date;
+}
+
+/**
+ * @param string $user_date
+ * @return bool
+ */
+function is_valid_date_interval(string $user_date): bool
+{
+    $user_date = strtotime($user_date);
+    $diff = $user_date - strtotime('now');
+    $days = floor($diff / 86400);
+    if ($days > 0) {
+        return true;
+    }
+    return false;
 }
 
 /**
