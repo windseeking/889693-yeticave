@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `lot`
   `created_at`    timestamp    DEFAULT CURRENT_TIMESTAMP NOT NULL,
   `title`         char(255)                              NOT NULL,
   `description`   varchar(1000)                          NOT NULL,
-  `image_url`     char(255)                              NOT NULL,
+  `img_url`       char(255)                              NOT NULL,
   `opening_price` int unsigned                           NOT NULL,
   `ends_at`       timestamp                              NOT NULL,
   `bid_step`      int unsigned                           NOT NULL,
