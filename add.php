@@ -4,6 +4,14 @@ require_once('functions.php');
 require_once('data.php');
 require_once('config.php');
 
+session_start();
+$con = get_connection($database_config);
+
+if (!isset($_SESSION['user'])) {
+    http_response_code(403);
+    exit();
+}
+
 $con = get_connection($database_config);
 $user_id = 1;
 $cats = get_cats($con);

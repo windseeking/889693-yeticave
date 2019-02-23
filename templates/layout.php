@@ -18,23 +18,27 @@
                 <input type="search" name="search" placeholder="Поиск лота">
                 <input class="main-header__search-btn" type="submit" name="find" value="Найти">
             </form>
+
+            <?php if (isset($_SESSION['user'])): ?>
             <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
 
             <nav class="user-menu">
-                <?php if (isset($is_auth)): ?>
-                    <div class="user-menu__logged">
-                        <p><?= filter_tags($user_name); ?></p>
-                    </div>
-                <?php else: ?>
-                    <ul class="user-menu__list">
-                        <li class="user-menu__item">
-                            <a href="sign-up.php">Регистрация</a>
-                        </li>
-                        <li class="user-menu__item">
-                            <a href="login.php">Вход</a>
-                        </li>
-                    </ul>
-                <?php endif; ?>
+                <div class="user-menu__logged">
+                    <p><?= $_SESSION['user']['name']; ?></p>
+                    <a href="../logout.php">Выход</a>
+                </div>
+            <?php else: ?>
+            <nav class="user-menu">
+                <ul class="user-menu__list">
+                    <li class="user-menu__item">
+                        <a href="/sign-up.php">Регистрация</a>
+                    </li>
+                    <li class="user-menu__item">
+                        <a href="/login.php">Вход</a>
+                    </li>
+                </ul>
+            <?php endif; ?>
+            </nav>
         </div>
     </header>
 
