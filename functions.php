@@ -2,7 +2,6 @@
 require_once('mysql_helper.php');
 
 date_default_timezone_set('Europe/Moscow');
-$is_auth = rand(0, 1);
 
 /**
  * @param $con
