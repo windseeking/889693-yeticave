@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($img_size > 10485760) {
             $errors['img_url'] = 'Изображение не должно превышать 10 Мб';
         } else {
-            $img_name = uniqid() . '-' . $_FILES['img_url']['name'];
+            $img_name = 'lot' . '-' . uniqid() . '-' . $_FILES['img_url']['name'];
             $img_path = __DIR__ . '/uploads/';
             move_uploaded_file($tmp_name, $img_path . $img_name);
             $lot['img_url'] = '/uploads/' . $img_name;
