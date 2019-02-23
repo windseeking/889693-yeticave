@@ -13,8 +13,8 @@ $is_auth = rand(0, 1);
 function add_lot($con, array $lot, int $user_id): bool
 {
     $sql =
-        'INSERT INTO lot (title, description, img_url, cat_id, opening_price, ends_at, bid_step, created_at, author_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)';
+        'INSERT INTO lot (title, description, img_url, cat_id, opening_price, ends_at, bid_step, author_id, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())';
     $values = [
         $lot['title'] = filter_tags($lot['title']),
         $lot['description'] = filter_tags($lot['description']),
@@ -23,8 +23,33 @@ function add_lot($con, array $lot, int $user_id): bool
         $lot['opening_price'],
         $lot['ends_at'],
         $lot['bid_step'],
-        $lot['created_at'],
         $user_id
+    ];
+    $stmt = db_get_prepare_stmt($con, $sql, $values);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_error($con)) {
+        return mysqli_error($con);
+    }
+    return true;
+}
+
+/**
+ * @param $con
+ * @param array $user
+ * @return bool
+ */
+function add_user($con, array $user): bool
+{
+    $sql =
+        'INSERT INTO user (email, password, name, contacts, avatar_url, created_at) 
+        VALUES (?, ?, ?, ?, ?, NOW())';
+    $values = [
+        $user['email'] = strtolower($user['email']),
+        $user['password'] = password_hash($user['password'], PASSWORD_DEFAULT),
+        $user['name'] = filter_tags($user['name']),
+        $user['contacts'] = filter_tags($user['contacts']),
+        $user['avatar_url']
     ];
     $stmt = db_get_prepare_stmt($con, $sql, $values);
     mysqli_stmt_execute($stmt);
@@ -155,6 +180,23 @@ function is_cat_exists(array $cats, array $lot): bool
     }
     return false;
 }
+
+/**
+ * @param $con
+ * @param string $email
+ * @return bool
+ */
+function is_email_exist($con, string $email): bool {
+    $sql =
+        'SELECT id FROM user '.
+        'WHERE email = ?';
+    $values = [$email];
+    $user = db_fetch_data($con, $sql, $values);
+    if (empty($user)) {
+        return false;
+    }
+    return true;
+};
 
 /**
  * @param string $date

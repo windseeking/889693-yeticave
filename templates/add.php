@@ -1,23 +1,10 @@
 <nav class="nav">
     <ul class="nav__list container">
-        <li class="nav__item">
-            <a href="all-lots.html">Доски и лыжи</a>
-        </li>
-        <li class="nav__item">
-            <a href="all-lots.html">Крепления</a>
-        </li>
-        <li class="nav__item">
-            <a href="all-lots.html">Ботинки</a>
-        </li>
-        <li class="nav__item">
-            <a href="all-lots.html">Одежда</a>
-        </li>
-        <li class="nav__item">
-            <a href="all-lots.html">Инструменты</a>
-        </li>
-        <li class="nav__item">
-            <a href="all-lots.html">Разное</a>
-        </li>
+        <?php foreach ($cats as $cat): ?>
+            <li class="nav__item">
+                <a href="#"><?= $cat['name'] ;?></a>
+            </li>
+        <?php endforeach; ?>
     </ul>
 </nav>
 <form class="form form--add-lot container form--invalid" action="add.php" method="post" enctype="multipart/form-data">
