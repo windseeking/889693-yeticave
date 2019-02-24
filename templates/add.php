@@ -106,7 +106,7 @@
             <?php endif; ?>
         </div>
     </div>
-    <?php if (count($errors)): ?>
+    <?php if (count($errors) or isset($_SESSION['error'])): ?>
         <span class="form__error form__error--bottom"><?= $_SESSION['error']; unset($_SESSION['error'])  ;?></span>
     <?php endif; ?>
     <button type="submit" class="button">Добавить лот</button>

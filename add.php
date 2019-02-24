@@ -13,7 +13,7 @@ if (!isset($_SESSION['user'])) {
 }
 
 $con = get_connection($database_config);
-$user_id = 1;
+$user_id = $_SESSION['user']['id'];
 $cats = get_cats($con);
 $lot = [];
 $errors = [];
@@ -73,14 +73,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $lot_id = mysqli_insert_id($con);
         header('Location: lot.php?id=' . $lot_id);
         die();
-    } else {
-        $page_content = include_template('add.php', [
-            'lot' => $lot,
-            'cats' => $cats,
-            'errors' => $errors
-        ]);
-        $_SESSION['error'] = 'Что-то пошло не так, форма не отправлена. Повторите отправку позже.';
     }
+    $page_content = include_template('add.php', [
+        'lot' => $lot,
+        'cats' => $cats,
+        'errors' => $errors
+    ]);
+    $_SESSION['error'] = 'Что-то пошло не так, форма не отправлена. Повторите отправку позже.';
 }
 $page_content = include_template('add.php', [
     'lot' => $lot,

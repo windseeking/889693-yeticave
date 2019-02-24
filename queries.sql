@@ -15,13 +15,20 @@ VALUES ('Доски и лыжи'),
 
 INSERT INTO lot (title, description, img_url, cat_id, opening_price, ends_at, bid_step, author_id)
 VALUES ('2014 Rossignol District Snowboard', 'description', 'img/lot-1.jpg', '1', '10999', '2019-02-22', '100', '1'),
-       ('DC Ply Mens 2016/2017 Snowboard', 'description', 'img/lot-2.jpg', '1', '159999', '2018-03-03', '200', '2'),
+       ('DC Ply Mens 2016/2017 Snowboard', 'Легкий маневренный сноуборд, готовый дать жару в любом парке, растопив
+            снег мощным щелчкоми четкими дугами. Стекловолокно Bi-Ax, уложенное в двух направлениях, наделяет этот
+            снаряд отличной гибкостью и отзывчивостью, а симметричная геометрия в сочетании с классическим прогибом
+            кэмбер позволит уверенно держать высокие скорости. А если к концу катального дня сил совсем не останется,
+            просто посмотрите на Вашу доску и улыбнитесь, крутая графика от Шона Кливера еще никого не оставляла
+            равнодушным.', 'img/lot-2.jpg', '1', '159999', '2018-03-03', '200', '2'),
        ('Крепления Union Contact Pro 2015 года размер L/XL', 'description', 'img/lot-3.jpg', '2', '8000', '2019-04-05', '300',
         '3'),
        ('Ботинки для сноуборда DC Mutiny Charocal', 'description', 'img/lot-4.jpg', '3', '10999', '2019-11-14', '400', '1'),
        ('Куртка для сноуборда DC Mutiny Charocal', 'description', 'img/lot-5.jpg', '4', '7500', '2019-02-28', '500', '2'),
        ('Маска Oakley Canopy', 'description', 'img/lot-6.jpg', '5', '5400', '2018-03-08', '600', '3');
 
-INSERT INTO stake (buyer_price, buyer_id, lot_id)
+INSERT INTO bid (buyer_price, buyer_id, lot_id)
 VALUES ('11000', '2', '1'),
        ('8300', '3', '3');
+
+UPDATE yeticave.lot SET `current_price` = `opening_price`;
