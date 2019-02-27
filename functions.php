@@ -3,6 +3,33 @@ require_once('mysql_helper.php');
 
 date_default_timezone_set('Europe/Moscow');
 
+/**s
+ * @param $con
+ * @param int $bid
+ * @param int $user_id
+ * @param int $lot_id
+ * @return bool
+ */
+function add_bid($con, int $bid, int $user_id, int $lot_id): bool
+{
+    $sql =
+        'INSERT INTO bid (buyer_price, buyer_id, lot_id, created_at) 
+        VALUES (?, ?, ?, NOW())';
+    $values = [
+        $bid,
+        $user_id,
+        $lot_id
+    ];
+
+    $stmt = db_get_prepare_stmt($con, $sql, $values);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_error($con)) {
+        return false;
+    }
+    return true;
+}
+
 /**
  * @param $con
  * @param array $lot
@@ -12,13 +39,14 @@ date_default_timezone_set('Europe/Moscow');
 function add_lot($con, array $lot, int $user_id): bool
 {
     $sql =
-        'INSERT INTO lot (title, description, img_url, cat_id, opening_price, ends_at, bid_step, author_id, created_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())';
+        'INSERT INTO lot (title, description, img_url, cat_id, opening_price, current_price, ends_at, bid_step, author_id, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
     $values = [
         $lot['title'] = filter_tags($lot['title']),
         $lot['description'] = filter_tags($lot['description']),
         $lot['img_url'],
         $lot['cat_id'],
+        $lot['opening_price'],
         $lot['opening_price'],
         $lot['ends_at'],
         $lot['bid_step'],
@@ -28,7 +56,7 @@ function add_lot($con, array $lot, int $user_id): bool
     mysqli_stmt_execute($stmt);
 
     if (mysqli_error($con)) {
-        return mysqli_error($con);
+        return false;
     }
     return true;
 }
@@ -54,7 +82,7 @@ function add_user($con, array $user): bool
     mysqli_stmt_execute($stmt);
 
     if (mysqli_error($con)) {
-        return mysqli_error($con);
+        return false;
     }
     return true;
 }
@@ -71,16 +99,55 @@ function filter_tags(string $str = null): string
     return strip_tags($str);
 }
 
+
+/**
+ * @param float|null $price
+ * @return string
+ */
+function format_price(float $price = null): string
+{
+    if ($price === null) {
+        return '';
+    }
+    $price = ceil($price);
+    if ($price >= 1000) {
+        $price = number_format($price, 0, ',', ' ');
+    }
+    return $price . ' ₽';
+}
+
+
 /**
  * @param $con
- * @return array
+ * @param $lot_id
+ * @return array|string|null
+ */
+function get_bids_by_lot_id($con, $lot_id): array
+{
+    $sql = 'SELECT b.*, u.name as user_name FROM bid b
+            JOIN user u ON u.id = b.buyer_id
+            WHERE b.lot_id = ' . $lot_id .
+          ' ORDER BY b.created_at DESC';
+    $res = mysqli_query($con, $sql);
+    if ($res) {
+        return mysqli_fetch_all($res, MYSQLI_ASSOC);
+    }
+    return [];
+}
+
+/**
+ * @param $con
+ * @return array|string|null
  */
 function get_cats($con): array
 {
     $sql =
         'SELECT * FROM cat';
     $res = mysqli_query($con, $sql);
-    return $cats = mysqli_fetch_all($res, MYSQLI_ASSOC);
+    if ($res) {
+        return mysqli_fetch_all($res, MYSQLI_ASSOC);
+    }
+    return [];
 }
 
 /**
@@ -98,16 +165,23 @@ function get_connection(array $database_config)
     return $con;
 }
 
+
 /**
  * @param $con
  * @return array
  */
 function get_lots($con): array
 {
-    $sql =
-        'SELECT * FROM lot ORDER BY created_at DESC';
+    $sql = 'SELECT l.*, COUNT(b.id) AS bids_amount
+            FROM lot l
+            LEFT JOIN bid b on b.lot_id = l.id
+            GROUP BY l.id
+            ORDER BY l.ends_at';
     $res = mysqli_query($con, $sql);
-    return mysqli_fetch_all($res, MYSQLI_ASSOC);
+    if ($res) {
+        return mysqli_fetch_all($res, MYSQLI_ASSOC);
+    }
+    return [];
 }
 
 /**
@@ -121,25 +195,12 @@ function get_lot_by_id($con, int $lot_id)
             c.name AS cat_name
             FROM lot l
             JOIN cat c ON c.id = l.cat_id
-            WHERE l.id = ' . $lot_id . ';';
+            WHERE l.id = ' . $lot_id;
     $res = mysqli_query($con, $sql);
     if ($res) {
         return mysqli_fetch_assoc($res);
     }
     return false;
-}
-
-/**
- * @param float $cost
- * @return string
- */
-function format_cost(float $cost): string
-{
-    $cost = ceil($cost);
-    if ($cost >= 1000) {
-        $cost = number_format($cost, 0, ',', ' ');
-    }
-    return $cost . ' ₽';
 }
 
 /**
@@ -185,9 +246,10 @@ function is_cat_exists(array $cats, array $lot): bool
  * @param string $email
  * @return bool
  */
-function is_email_exist($con, string $email): bool {
+function is_email_exist($con, string $email): bool
+{
     $sql =
-        'SELECT id FROM user '.
+        'SELECT id FROM user ' .
         'WHERE email = ?';
     $values = [$email];
     $user = db_fetch_data($con, $sql, $values);
@@ -195,7 +257,7 @@ function is_email_exist($con, string $email): bool {
         return false;
     }
     return true;
-};
+}
 
 /**
  * @param string $date
@@ -232,5 +294,36 @@ function time_left(string $deadline): string
     $now = date_create('now');
     $deadline = date_create($deadline);
     $diff = date_diff($now, $deadline);
-    return date_interval_format($diff, "%H:%I");
+    return date_interval_format($diff, "%dд %Hч %Iм");
+}
+
+function time_passed(string $date)
+{
+    $diff = strtotime('now') - strtotime($date);
+    $now = date_create('now');
+    $date = date_create($date);
+
+    if ($diff < 86400 and $diff > 3540) {
+        $diff = date_diff($now, $date);
+        return date_interval_format($diff, "%hч %iм") . ' назад';
+    } elseif ($diff < 60) {
+        $diff = date_diff($now, $date);
+        return date_interval_format($diff, "%sс") . ' назад';
+    } elseif ($diff > 60 and $diff < 86400) {
+        $diff = date_diff($now, $date);
+        return date_interval_format($diff, "%iм") . ' назад';
+    } else {
+        return date_format($date, "d.m.Y в H:i");
+    }
+}
+
+function update_price($con, string $new_price, int $lot_id)
+{
+    $sql = 'UPDATE lot SET current_price = ' . $new_price .
+        ' WHERE id = ' . $lot_id;
+    $res = mysqli_query($con, $sql);
+    if ($res) {
+        return true;
+    }
+    return false;
 }

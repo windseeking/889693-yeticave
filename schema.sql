@@ -8,19 +8,19 @@ set foreign_key_checks = 0;
 
 CREATE TABLE IF NOT EXISTS `user`
 (
-  `id`             int unsigned                           NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `created_at`     timestamp    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  `email`          char(255)                              NOT NULL UNIQUE KEY,
-  `name`           char(255)                              NOT NULL,
-  `password`       char(255)                              NOT NULL,
-  `avatar_url`     char(255)    DEFAULT NULL,
-  `contacts`       char(255)                              NOT NULL,
-  `lots_created`   int unsigned DEFAULT NULL,
-  `stakes_created` int unsigned DEFAULT NULL,
+  `id`           int unsigned                           NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `created_at`   timestamp    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  `email`        char(255)                              NOT NULL UNIQUE KEY,
+  `name`         char(255)                              NOT NULL,
+  `password`     char(255)                              NOT NULL,
+  `avatar_url`   char(255)    DEFAULT NULL,
+  `contacts`     char(255)                              NOT NULL,
+  `lots_created` int unsigned DEFAULT NULL,
+  `bids_created` int unsigned DEFAULT NULL,
   KEY user_lot_id_fk (lots_created),
-  KEY user_stake_id_fk (stakes_created),
+  KEY user_bid_id_fk (bids_created),
   CONSTRAINT user_lot_created_id FOREIGN KEY (lots_created) REFERENCES lot (id),
-  CONSTRAINT user_stake_created_id FOREIGN KEY (stakes_created) REFERENCES stake (id)
+  CONSTRAINT user_bid_created_id FOREIGN KEY (bids_created) REFERENCES bid (id)
 );
 
 CREATE TABLE IF NOT EXISTS `cat`
@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `lot`
   `description`   varchar(1000)                          NOT NULL,
   `img_url`       char(255)                              NOT NULL,
   `opening_price` int unsigned                           NOT NULL,
+  `current_price` int unsigned DEFAULT NULL,
   `ends_at`       timestamp                              NOT NULL,
   `bid_step`      int unsigned                           NOT NULL,
   `winner_id`     int unsigned DEFAULT NULL,
@@ -52,15 +53,15 @@ CREATE TABLE IF NOT EXISTS `lot`
   CONSTRAINT lot_winner_id_fk FOREIGN KEY (winner_id) REFERENCES user (id)
 );
 
-CREATE TABLE IF NOT EXISTS `stake`
+CREATE TABLE IF NOT EXISTS `bid`
 (
-  `id`          int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `created_at`  timestamp    DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  `buyer_price` int unsigned NOT NULL,
-  `buyer_id`    int unsigned NOT NULL,
-  `lot_id`      int unsigned NOT NULL,
-  KEY stake_buyer_id_fk (buyer_id),
-  KEY stake_lot_id_fk (lot_id),
-  CONSTRAINT stake_buyer_id_fk FOREIGN KEY (buyer_id) REFERENCES user (id),
-  CONSTRAINT stake_lot_id_fk FOREIGN KEY (lot_id) REFERENCES lot (id)
+  `id`          int unsigned                        NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `created_at`  timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  `buyer_price` int unsigned                        NOT NULL,
+  `buyer_id`    int unsigned                        NOT NULL,
+  `lot_id`      int unsigned                        NOT NULL,
+  KEY bid_buyer_id_fk (buyer_id),
+  KEY bid_lot_id_fk (lot_id),
+  CONSTRAINT bid_buyer_id_fk FOREIGN KEY (buyer_id) REFERENCES user (id),
+  CONSTRAINT bid_lot_id_fk FOREIGN KEY (lot_id) REFERENCES lot (id)
 );
