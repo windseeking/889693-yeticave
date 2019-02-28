@@ -32,7 +32,7 @@
                         </div>
                     </div>
 
-                    <?php if (isset($_SESSION['user']) and $_SESSION['user']['id'] != $lot['author_id'])т   : ?>
+                    <?php if (isset($_SESSION['user']) and $_SESSION['user']['id'] != $lot['author_id'])   : ?>
                     <form class="lot-item__form" method="post" enctype="multipart/form-data">
                         <?php $class = isset($errors['bid']) ? 'form__item--invalid' : '';
                         $value = isset($form['bid']) ? $form['bid'] : ''; ?>

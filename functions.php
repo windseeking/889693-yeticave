@@ -3,20 +3,22 @@ require_once('mysql_helper.php');
 
 date_default_timezone_set('Europe/Moscow');
 
-/**s
- * @param $con
- * @param int $bid
- * @param int $user_id
- * @param int $lot_id
- * @return bool
+/**
+ * Добавляет ставку к лоту с определенным ID
+ *
+ * @param mysqli $con Ресурс соединения
+ * @param int $buyer_price Сумма ставки
+ * @param int $user_id ID пользователя, добавившего лот
+ * @param int $lot_id ID лота, к которому добавили ставку
+ * @return bool Результат добавления ставки: true - добавлена, false - не добавлена
  */
-function add_bid($con, int $bid, int $user_id, int $lot_id): bool
+function add_bid(mysqli $con, int $buyer_price, int $user_id, int $lot_id): bool
 {
     $sql =
         'INSERT INTO bid (buyer_price, buyer_id, lot_id, created_at) 
         VALUES (?, ?, ?, NOW())';
     $values = [
-        $bid,
+        $buyer_price,
         $user_id,
         $lot_id
     ];
@@ -31,12 +33,14 @@ function add_bid($con, int $bid, int $user_id, int $lot_id): bool
 }
 
 /**
- * @param $con
- * @param array $lot
- * @param int $user_id
- * @return bool
+ * Добавляет лот
+ *
+ * @param mysqli $con Ресурс соединения
+ * @param array $lot Массив с данными лота
+ * @param int $user_id ID пользователя, добавившего лот
+ * @return bool Результат добавления лота: true - добавлен, false - не добавлен
  */
-function add_lot($con, array $lot, int $user_id): bool
+function add_lot(mysqli $con, array $lot, int $user_id): bool
 {
     $sql =
         'INSERT INTO lot (title, description, img_url, cat_id, opening_price, current_price, ends_at, bid_step, author_id, created_at) 
@@ -62,11 +66,13 @@ function add_lot($con, array $lot, int $user_id): bool
 }
 
 /**
- * @param $con
- * @param array $user
- * @return bool
+ * Добавляет пользователя
+ *
+ * @param mysqli $con Ресурс соединения
+ * @param array $user Массив с данными пользователя
+ * @return bool Результат добавления пользователя: true - добавлен, false - не добавлен
  */
-function add_user($con, array $user): bool
+function add_user(mysqli $con, array $user): bool
 {
     $sql =
         'INSERT INTO user (email, password, name, contacts, avatar_url, created_at) 
@@ -88,8 +94,10 @@ function add_user($con, array $user): bool
 }
 
 /**
- * @param string|null $str
- * @return string
+ * Убирает теги из строки
+ *
+ * @param string|null $str Строка с тегами или без|null
+ * @return string Строка без тегов
  */
 function filter_tags(string $str = null): string
 {
@@ -101,14 +109,13 @@ function filter_tags(string $str = null): string
 
 
 /**
- * @param float|null $price
- * @return string
+ * Форматирует цену лота
+ *
+ * @param float $price Цена лота
+ * @return string Отформатированная цена и симол рубля
  */
 function format_price(float $price = null): string
 {
-    if ($price === null) {
-        return '';
-    }
     $price = ceil($price);
     if ($price >= 1000) {
         $price = number_format($price, 0, ',', ' ');
@@ -118,11 +125,13 @@ function format_price(float $price = null): string
 
 
 /**
- * @param $con
- * @param $lot_id
- * @return array|string|null
+ * Возвращает массив с данными ставки для лота с определенным ID
+ *
+ * @param mysqli $con Ресурс соединения
+ * @param int $lot_id ID лота
+ * @return array|string|null Массив с данными ставки|Пустой массив, если объект результата пуст
  */
-function get_bids_by_lot_id($con, $lot_id): array
+function get_bids_by_lot_id(mysqli $con, int $lot_id): array
 {
     $sql = 'SELECT b.*, u.name as user_name FROM bid b
             JOIN user u ON u.id = b.buyer_id
@@ -136,10 +145,12 @@ function get_bids_by_lot_id($con, $lot_id): array
 }
 
 /**
- * @param $con
- * @return array|string|null
+ * Возвращает массив с данными категорий
+ *
+ * @param mysqli $con Ресурс соединения
+ * @return array|string|null Массив с данными категорий|Пустой массив, если объект результата пуст
  */
-function get_cats($con): array
+function get_cats(mysqli $con): array
 {
     $sql =
         'SELECT * FROM cat';
@@ -151,8 +162,10 @@ function get_cats($con): array
 }
 
 /**
- * @param array $database_config
- * @return mysqli
+ * Устанавливает соединение с БД
+ *
+ * @param array $database_config Массив с данными для подключения к БД
+ * @return mysqli $con Ресурс соединения
  */
 function get_connection(array $database_config)
 {
@@ -167,10 +180,12 @@ function get_connection(array $database_config)
 
 
 /**
- * @param $con
- * @return array
+ * Возвращает массив с данными лотов
+ *
+ * @param mysqli $con Ресурс соединения
+ * @return array Массив с данными лотов
  */
-function get_lots($con): array
+function get_lots(mysqli $con): array
 {
     $sql = 'SELECT l.*, COUNT(b.id) AS bids_amount
             FROM lot l
@@ -185,11 +200,13 @@ function get_lots($con): array
 }
 
 /**
- * @param $con
- * @param int $lot_id
- * @return array|bool|null
+ * Возвращает лот с определенным ID
+ *
+ * @param mysqli $con Ресурс соединения
+ * @param int $lot_id ID лота
+ * @return array|bool|null Массив данных лота|Если объект результата не получен, то false
  */
-function get_lot_by_id($con, int $lot_id)
+function get_lot_by_id(mysqli $con, int $lot_id)
 {
     $sql = 'SELECT l.*,
             c.name AS cat_name
@@ -203,12 +220,44 @@ function get_lot_by_id($con, int $lot_id)
     return false;
 }
 
+//function get_pagination_data($con, int $cur_page, int $page_lots)
+//{
+//    $res = mysqli_query($con, 'SELECT COUNT(*) as lots_amount FROM lot');
+//    $lots_count = mysqli_fetch_assoc($res)['lots_amount'];
+//
+//    $pages_count = ceil($lots_count / $page_lots);
+//
+//    if ($pages_count <= 1) {
+//        return [];
+//    } else {
+//        $offset = ($cur_page - 1) * $page_lots;
+//        $pages = range(1, $pages_count);
+//
+//        $sql = 'SELECT l.*, c.name FROM lot l '
+//            . 'JOIN cat c ON l.cat_id = c.id '
+//            . 'ORDER BY l.created_at DESC LIMIT ' . $page_lots . ' OFFSET ' . $offset;
+//
+//        $res = mysqli_query($con, $sql);
+//        if ($res) {
+//            $lots = mysqli_fetch_all($res, MYSQLI_ASSOC);
+//            return [
+//                'pages' => $pages,
+//                'cur_page' => $cur_page,
+//                'lots' => $lots
+//            ];
+//        }
+//        return [];
+//    }
+//}
+
 /**
- * @param $name
- * @param $data
+ * Подключает шаблон
+ *
+ * @param string $name Имя шаблона
+ * @param array $data Данные шаблона
  * @return false|string
  */
-function include_template($name, $data)
+function include_template(string $name, array $data)
 {
     $name = 'templates/' . $name;
     $result = '';
@@ -227,9 +276,11 @@ function include_template($name, $data)
 }
 
 /**
- * @param array $cats
- * @param array $lot
- * @return bool
+ * Проверяет существование категории
+ *
+ * @param array $cats Массив с данными категории
+ * @param array $lot Массив с данными лота
+ * @return bool Результат проверки: true - категория найдена, false - категория не найдена
  */
 function is_cat_exists(array $cats, array $lot): bool
 {
@@ -242,11 +293,13 @@ function is_cat_exists(array $cats, array $lot): bool
 }
 
 /**
- * @param $con
- * @param string $email
- * @return bool
+ * Проверяет существавание пользователя с определенным email-адресом
+ *
+ * @param mysqli $con Ресурс соединения
+ * @param string $email Адрес пользователя
+ * @return bool Результат проверки: true - такой адрес есть в БД, false - такого адреса нет в БД
  */
-function is_email_exist($con, string $email): bool
+function is_email_exist(mysqli $con, string $email): bool
 {
     $sql =
         'SELECT id FROM user ' .
@@ -260,9 +313,11 @@ function is_email_exist($con, string $email): bool
 }
 
 /**
+ * Проверяет дату на соотетствие формату
+ *
  * @param string $date
- * @param string $format
- * @return bool
+ * @param string $format Нужный формат даты
+ * @return bool Результат проверки: true - соответствует формату, false - не соответствует
  */
 function is_valid_date_format(string $date, string $format = 'Y-m-d'): bool
 {
@@ -271,8 +326,10 @@ function is_valid_date_format(string $date, string $format = 'Y-m-d'): bool
 }
 
 /**
- * @param string $user_date
- * @return bool
+ * Проверяет, больше ли дата текущей минимум на 1 день
+ *
+ * @param string $user_date Дата, введенная пользователем
+ * @return bool Результат проверки: true - больше, false - не больше
  */
 function is_valid_date_interval(string $user_date): bool
 {
@@ -286,8 +343,10 @@ function is_valid_date_interval(string $user_date): bool
 }
 
 /**
- * @param string $deadline
- * @return string
+ * Вычисляет время до окончания торгов
+ *
+ * @param string $deadline Дата окончания торгов
+ * @return string Время до окончания торгов
  */
 function time_left(string $deadline): string
 {
@@ -297,6 +356,12 @@ function time_left(string $deadline): string
     return date_interval_format($diff, "%dд %Hч %Iм");
 }
 
+/**
+ * Вычисляет количество времени с момента добавления ставки
+ *
+ * @param string $date Дата добавления ставки
+ * @return false|string Время с момента добавления ставки
+ */
 function time_passed(string $date)
 {
     $diff = strtotime('now') - strtotime($date);
@@ -317,7 +382,15 @@ function time_passed(string $date)
     }
 }
 
-function update_price($con, string $new_price, int $lot_id)
+/**
+ * Обновляет текущую цену лота при добавлении ставки к нему
+ *
+ * @param mysqli $con Ресурс соединения
+ * @param string $new_price Новая цена
+ * @param int $lot_id ID лота, цена которого обновляется
+ * @return bool Результат: true - текущая цена обновлена, false - не обновлена
+ */
+function update_price(mysqli $con, string $new_price, int $lot_id)
 {
     $sql = 'UPDATE lot SET current_price = ' . $new_price .
         ' WHERE id = ' . $lot_id;
