@@ -7,14 +7,14 @@ if (isset($_SESSION['user'])) {
 }
 
 $cats = get_cats($con);
-$lots = [];
+$lot = [];
 $errors = [];
 
 if (isset($_GET['id'])) {
-    $lot = get_lot_by_id($con, $_GET['id']);
+    $lot_id = (int)$_GET['id'];
+    $lot = get_lot_by_id($con, $lot_id);
     if (isset($lot)) {
         $page_title = $lot['title'];
-        $lot_id = $_GET['id'];
         $bids = get_bids_by_lot_id($con, $lot_id);
         $page_content = include_template('lot.php', [
             'lot' => $lot,

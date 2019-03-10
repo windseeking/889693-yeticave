@@ -3,7 +3,7 @@
 require_once('init.php');
 
 $cats = get_cats($con);
-$lots = [];
+$lots = get_lots($con);
 $pagination_data = [];
 
 $cur_page = $_GET['page'] ?? 1;

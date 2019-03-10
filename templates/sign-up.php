@@ -28,7 +28,7 @@
         <label for="name">Имя*</label>
         <input id="name" type="text" name="user[name]" placeholder="Введите имя" value="<?= $value; ?>">
         <?php if (isset($errors['name'])): ?>
-            <span class="form__error">Введите имя</span>
+            <span class="form__error">Введите имя</span>^
         <?php endif; ?>
     </div>
 

@@ -44,8 +44,8 @@ function add_lot(mysqli $con, array $lot, int $user_id): bool
     $sql = 'INSERT INTO lot (title, description, img_url, cat_id, opening_price, current_price, ends_at, bid_step, author_id, created_at) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
     $values = [
-        $lot['title'] = filter_tags($lot['title']),
-        $lot['description'] = filter_tags($lot['description']),
+        $lot['title'],
+        $lot['description'],
         $lot['img_url'],
         $lot['cat_id'],
         $lot['opening_price'],
@@ -77,8 +77,8 @@ function add_user(mysqli $con, array $user): bool
     $values = [
         $user['email'] = strtolower($user['email']),
         $user['password'] = password_hash($user['password'], PASSWORD_DEFAULT),
-        $user['name'] = filter_tags($user['name']),
-        $user['contacts'] = filter_tags($user['contacts']),
+        $user['name'],
+        $user['contacts'],
         $user['avatar_url']
     ];
     $stmt = db_get_prepare_stmt($con, $sql, $values);
@@ -132,7 +132,7 @@ function get_bids_by_lot_id(mysqli $con, int $lot_id): array
     $sql = 'SELECT b.*, u.name as user_name FROM bid b
             JOIN user u ON u.id = b.buyer_id
             WHERE b.lot_id = ' . $lot_id .
-        ' ORDER BY b.created_at DESC';
+          ' ORDER BY b.created_at DESC';
     $res = mysqli_query($con, $sql);
     if ($res) {
         return mysqli_fetch_all($res, MYSQLI_ASSOC);
@@ -200,8 +200,9 @@ function get_connection(array $database_config)
  */
 function get_lots(mysqli $con): array
 {
-    $sql = 'SELECT l.*, COUNT(b.id) AS bids_amount
+    $sql = 'SELECT l.*, c.name AS cat_name, COUNT(b.id) AS bids_amount
             FROM lot l
+            JOIN cat c ON c.id = l.cat_id
             LEFT JOIN bid b on b.lot_id = l.id
             WHERE l.ends_at > CURDATE()
             GROUP BY l.id
@@ -349,9 +350,8 @@ function is_cat_id_exists(mysqli $con, int $cat_id): bool
  */
 function is_email_exist(mysqli $con, string $email): bool
 {
-    $sql =
-        'SELECT id FROM user ' .
-        'WHERE email = ?';
+    $sql = 'SELECT id FROM user ' .
+           'WHERE email = ?';
     $values = [$email];
     $user = db_fetch_data($con, $sql, $values);
     if (empty($user)) {
@@ -455,10 +455,11 @@ function time_passed(string $date)
  * @param int $lot_id ID лота, цена которого обновляется
  * @return bool Результат: true - текущая цена обновлена, false - не обновлена
  */
-function update_price(mysqli $con, string $new_price, int $lot_id)
+function update_price(mysqli $con, string $new_price, int $lot_id): bool
 {
+    $new_price = mysqli_real_escape_string($con, $new_price);
     $sql = 'UPDATE lot SET current_price = ' . $new_price .
-        ' WHERE id = ' . $lot_id;
+          ' WHERE id = ' . $lot_id;
     $res = mysqli_query($con, $sql);
     if ($res) {
         return true;

@@ -25,7 +25,7 @@
 
             <nav class="user-menu">
                 <div class="user-menu__logged">
-                    <p><?= $_SESSION['user']['name']; ?></p>
+                    <p><?= filter_tags($_SESSION['user']['name']); ?></p>
                     <a href="../logout.php">Выход</a>
                 </div>
             <?php else: ?>
@@ -105,7 +105,7 @@
                 </svg>
             </a>
         </div>
-        <a class="main-footer__add-lot button" href="add-lot.html">Добавить лот</a>
+        <a class="main-footer__add-lot button" href="add.php">Добавить лот</a>
         <div class="main-footer__developed-by">
             <span class="visually-hidden">Разработано:</span>
             <a class="logo-academy" href="https://htmlacademy.ru/intensive/php">
