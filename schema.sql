@@ -65,3 +65,5 @@ CREATE TABLE IF NOT EXISTS `bid`
   CONSTRAINT bid_buyer_id_fk FOREIGN KEY (buyer_id) REFERENCES user (id),
   CONSTRAINT bid_lot_id_fk FOREIGN KEY (lot_id) REFERENCES lot (id)
 );
+
+CREATE FULLTEXT INDEX lots_ft_search ON lot(title, description);

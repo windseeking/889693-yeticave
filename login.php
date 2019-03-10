@@ -1,16 +1,13 @@
 <?php
 
-require_once('functions.php');
-require_once('data.php');
-require_once('config.php');
+require_once('init.php');
 
-session_start();
 if (isset($_SESSION['user'])) {
     header("Location: index.php");
     exit();
 };
 
-$con = get_connection($database_config);
+$user = [];
 $cats = get_cats($con);
 $lots = get_lots($con);
 $page_title = 'Вход';

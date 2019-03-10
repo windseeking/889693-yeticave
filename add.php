@@ -1,11 +1,6 @@
 <?php
 
-require_once('functions.php');
-require_once('data.php');
-require_once('config.php');
-
-session_start();
-$con = get_connection($database_config);
+require_once('init.php');
 
 if (!isset($_SESSION['user'])) {
     http_response_code(403);
@@ -64,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (count($errors)) {
         $page_content = include_template('add.php', [
-            'lot' => $lots,
+            'lot' => $lot,
             'cats' => $cats,
             'errors' => $errors
         ]);
@@ -79,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'cats' => $cats,
         'errors' => $errors
     ]);
-    $_SESSION['error'] = 'Что-то пошло не так, форма не отправлена. Повторите отправку позже.';
+    $_SESSION['error'] = 'Что-то пошло не так, форма не отправлена.';
 }
 $page_content = include_template('add.php', [
     'lot' => $lot,

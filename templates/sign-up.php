@@ -1,13 +1,3 @@
-<nav class="nav">
-    <ul class="nav__list container">
-        <?php foreach ($cats as $cat): ?>
-            <li class="nav__item">
-                <a href="#"><?= $cat['name'] ;?></a>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-</nav>
-
 <?php $class = count($errors) ? 'form--invalid' : '' ;?>
 <form class="form container <?= $class; ?>" action="sign-up.php" method="post" enctype="multipart/form-data">
     <h2>Регистрация нового аккаунта</h2>

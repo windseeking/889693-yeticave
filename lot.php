@@ -1,15 +1,11 @@
 <?php
 
-require_once('functions.php');
-require_once('data.php');
-require_once('config.php');
+require_once('init.php');
 
-session_start();
 if (isset($_SESSION['user'])) {
     $user = $_SESSION['user'];
 }
 
-$con = get_connection($database_config);
 $cats = get_cats($con);
 $lots = [];
 $errors = [];
@@ -24,7 +20,8 @@ if (isset($_GET['id'])) {
             'lot' => $lot,
             'cats' => $cats,
             'bids' => $bids,
-            'errors' => $errors]);
+            'errors' => $errors
+        ]);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $form = $_POST;
@@ -34,7 +31,8 @@ if (isset($_GET['id'])) {
                     'lot' => $lot,
                     'cats' => $cats,
                     'bids' => $bids,
-                    'errors' => $errors]);
+                    'errors' => $errors
+                ]);
             } elseif ($form['bid'] <= 0 or $form['bid'] != intval($form['bid'])) {
                 $errors['bid'] = 'Введите целое число больше нуля';
             } elseif ($form['bid'] < ($lot['current_price'] + $lot['bid_step'])) {
@@ -44,7 +42,7 @@ if (isset($_GET['id'])) {
             if (empty($errors)) {
                 $bid = $form['bid'];
                 if (add_bid($con, $bid, $user['id'], $lot_id)) {
-                    if(update_price($con, $bid, $lot_id)) {
+                    if (update_price($con, $bid, $lot_id)) {
                         header('Location: lot.php?id=' . $lot_id);
                     }
                 }
@@ -65,7 +63,11 @@ if (isset($_GET['id'])) {
     $page_content = include_template('404.php', ['cats' => $cats]);
     $page_title = 'Error 404';
 }
+
+$nav_content = include_template('_navigation.php', ['cats' => $cats]);
+
 $layout_content = include_template('layout.php', [
+    'nav' => $nav_content,
     'content' => $page_content,
     'title' => $page_title,
     'user_name' => $user_name,
