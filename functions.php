@@ -14,9 +14,8 @@ date_default_timezone_set('Europe/Moscow');
  */
 function add_bid(mysqli $con, int $buyer_price, int $user_id, int $lot_id): bool
 {
-    $sql =
-        'INSERT INTO bid (buyer_price, buyer_id, lot_id, created_at) 
-        VALUES (?, ?, ?, NOW())';
+    $sql = 'INSERT INTO bid (buyer_price, buyer_id, lot_id, created_at) 
+            VALUES (?, ?, ?, NOW())';
     $values = [
         $buyer_price,
         $user_id,
@@ -42,9 +41,8 @@ function add_bid(mysqli $con, int $buyer_price, int $user_id, int $lot_id): bool
  */
 function add_lot(mysqli $con, array $lot, int $user_id): bool
 {
-    $sql =
-        'INSERT INTO lot (title, description, img_url, cat_id, opening_price, current_price, ends_at, bid_step, author_id, created_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
+    $sql = 'INSERT INTO lot (title, description, img_url, cat_id, opening_price, current_price, ends_at, bid_step, author_id, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
     $values = [
         $lot['title'] = filter_tags($lot['title']),
         $lot['description'] = filter_tags($lot['description']),
@@ -74,9 +72,8 @@ function add_lot(mysqli $con, array $lot, int $user_id): bool
  */
 function add_user(mysqli $con, array $user): bool
 {
-    $sql =
-        'INSERT INTO user (email, password, name, contacts, avatar_url, created_at) 
-        VALUES (?, ?, ?, ?, ?, NOW())';
+    $sql = 'INSERT INTO user (email, password, name, contacts, avatar_url, created_at) 
+            VALUES (?, ?, ?, ?, ?, NOW())';
     $values = [
         $user['email'] = strtolower($user['email']),
         $user['password'] = password_hash($user['password'], PASSWORD_DEFAULT),
@@ -123,7 +120,6 @@ function format_price(float $price = null): string
     return $price . ' ₽';
 }
 
-
 /**
  * Возвращает массив с данными ставки для лота с определенным ID
  *
@@ -152,13 +148,30 @@ function get_bids_by_lot_id(mysqli $con, int $lot_id): array
  */
 function get_cats(mysqli $con): array
 {
-    $sql =
-        'SELECT * FROM cat';
+    $sql = 'SELECT * FROM cat';
     $res = mysqli_query($con, $sql);
     if ($res) {
         return mysqli_fetch_all($res, MYSQLI_ASSOC);
     }
     return [];
+}
+
+/**
+ * Возвращает имя категории по переданному ID категории
+ *
+ * @param mysqli $con Ресурс соединения
+ * @param int $cat_id ID категории
+ * @return string Строка с именем категории или пустая стока, если массив данных категории пуст
+ */
+function get_cat_name_by_id(mysqli $con, int $cat_id): string
+{
+    $sql = 'SELECT name FROM cat WHERE id = ' . $cat_id;
+    $res = mysqli_query($con, $sql);
+    $cat = mysqli_fetch_all($res, MYSQLI_ASSOC);
+    if ($cat) {
+        return $cat[0]['name'];
+    }
+    return '';
 }
 
 /**
@@ -200,11 +213,35 @@ function get_lots(mysqli $con): array
 }
 
 /**
+ * Возвращает лоты для определенной категории
+ *
+ * @param mysqli $con Ресурс соединения
+ * @param int $cat_id ID категории
+ * @return array|null Массив данных лота|Если объект результата не получен, то пустой массив
+ */
+function get_lots_by_cat_id(mysqli $con, int $cat_id): array
+{
+    $sql = 'SELECT l.*, c.name AS cat_name, COUNT(b.id) AS bids_amount
+            FROM lot l 
+            JOIN cat c ON c.id = l.cat_id
+            LEFT JOIN bid b ON b.lot_id = l.id 
+            WHERE l.cat_id = ?
+            GROUP BY l.id
+            ORDER BY created_at DESC';
+    $values = [$cat_id];
+    $lots = db_fetch_data($con, $sql, $values);
+    if (!empty($lots)) {
+        return $lots;
+    }
+    return [];
+}
+
+/**
  * Возвращает лот с определенным ID
  *
  * @param mysqli $con Ресурс соединения
  * @param int $lot_id ID лота
- * @return array|bool|null Массив данных лота|Если объект результата не получен, то false
+ * @return array|bool|null Массив данных лота|Если объект результата не получен, то пустой массив
  */
 function get_lot_by_id(mysqli $con, int $lot_id)
 {
@@ -217,38 +254,8 @@ function get_lot_by_id(mysqli $con, int $lot_id)
     if ($res) {
         return mysqli_fetch_assoc($res);
     }
-    return false;
+    return [];
 }
-
-//function get_pagination_data($con, int $cur_page, int $page_lots)
-//{
-//    $res = mysqli_query($con, 'SELECT COUNT(*) as lots_amount FROM lot');
-//    $lots_count = mysqli_fetch_assoc($res)['lots_amount'];
-//
-//    $pages_count = ceil($lots_count / $page_lots);
-//
-//    if ($pages_count <= 1) {
-//        return [];
-//    } else {
-//        $offset = ($cur_page - 1) * $page_lots;
-//        $pages = range(1, $pages_count);
-//
-//        $sql = 'SELECT l.*, c.name FROM lot l '
-//            . 'JOIN cat c ON l.cat_id = c.id '
-//            . 'ORDER BY l.created_at DESC LIMIT ' . $page_lots . ' OFFSET ' . $offset;
-//
-//        $res = mysqli_query($con, $sql);
-//        if ($res) {
-//            $lots = mysqli_fetch_all($res, MYSQLI_ASSOC);
-//            return [
-//                'pages' => $pages,
-//                'cur_page' => $cur_page,
-//                'lots' => $lots
-//            ];
-//        }
-//        return [];
-//    }
-//}
 
 /**
  * Подключает шаблон
@@ -290,6 +297,24 @@ function is_cat_exists(array $cats, array $lot): bool
         }
     }
     return false;
+}
+
+/**
+ * Проверяет существование категории с определенным ID
+ *
+ * @param mysqli $con Ресурс соединения
+ * @param int $cat_id ID категории
+ * @return bool Результат проверки: true - категория с таким ID существует, false - не существует
+ */
+function is_cat_id_exists(mysqli $con, int $cat_id): bool
+{
+    $sql = 'SELECT * FROM cat WHERE id = ?';
+    $values = [$cat_id];
+    $cat = db_fetch_data($con, $sql, $values);
+    if (empty($cat)) {
+        return false;
+    }
+    return true;
 }
 
 /**

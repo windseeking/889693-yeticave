@@ -43,6 +43,10 @@
         </div>
     </header>
 
+    <?php if (isset($nav)): ?>
+        <?= $nav; ?>
+    <?php endif; ?>
+
     <main class="container">
         <?= $content; ?>
     </main>
@@ -53,7 +57,7 @@
         <ul class="nav__list container">
             <?php foreach ($cats as $cat): ?>
                 <li class="nav__item">
-                    <a href="pages/all-lots.html"><?= $cat['name']; ?></a>
+                    <a href="all-lots.php?cat=<?= $cat['id']; ?>"><?= $cat['name']; ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>

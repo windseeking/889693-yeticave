@@ -1,12 +1,7 @@
 <?php
 
-require_once('functions.php');
-require_once('data.php');
-require_once('config.php');
+require_once('init.php');
 
-session_start();
-
-$con = get_connection($database_config);
 $cats = get_cats($con);
 $lots = [];
 $pagination_data = [];
@@ -24,9 +19,10 @@ if ($pages_count <= 1) {
     $offset = ($cur_page - 1) * $page_lots;
     $pages = range(1, $pages_count);
 
-    $sql = 'SELECT l.*, c.name FROM lot l '
+    $sql = 'SELECT l.*, c.name AS cat_name, COUNT(b.id) as bids_amount FROM lot l '
         . 'JOIN cat c ON l.cat_id = c.id '
-        . 'ORDER BY l.created_at DESC LIMIT ' . $page_lots . ' OFFSET ' . $offset;
+        . 'LEFT JOIN bid b ON b.lot_id = l.id '
+        . 'GROUP BY l.id ORDER BY l.created_at DESC LIMIT ' . $page_lots . ' OFFSET ' . $offset;
     $res = mysqli_query($con, $sql);
 
     if ($res) {
@@ -43,15 +39,16 @@ if ($pages_count <= 1) {
 }
 
 $page_title = 'Главная';
+
 $page_content = include_template('index.php', [
     'lots' => $lots,
     'cats' => $cats,
     'pagination_data' => $pagination_data
 ]);
+
 $layout_content = include_template('layout.php', [
     'content' => $page_content,
     'title' => $page_title,
-    'user_name' => filter_tags($user_name),
     'cats' => $cats
 ]);
 

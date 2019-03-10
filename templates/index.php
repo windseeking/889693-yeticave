@@ -5,7 +5,7 @@
     <ul class="promo__list">
         <?php foreach ($cats as $cat): ?>
             <li class="promo__item promo__item--boards">
-                <a class="promo__link" href="pages/all-lots.html"><?= filter_tags($cat['name']); ?></a>
+                <a class="promo__link" href="all-lots.php?cat=<?= $cat['id'] ;?>"><?= filter_tags($cat['name']); ?></a>
             </li>
         <?php endforeach; ?>
     </ul>

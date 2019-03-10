@@ -1,12 +1,7 @@
 <?php
 
-require_once('functions.php');
-require_once('data.php');
-require_once('config.php');
+require_once('init.php');
 
-session_start();
-
-$con = get_connection($database_config);
 $cats = get_cats($con);
 $lots = get_lots($con);
 $pages = [];
