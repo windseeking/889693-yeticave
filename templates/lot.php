@@ -10,20 +10,31 @@
         </div>
         <div class="lot-item__right">
             <div class="lot-item__state">
-                <div class="lot-item__timer timer">
-                    <?= time_left($lot['ends_at']); ?>
-                </div>
+                <?php if (!is_time_elapsed($lot['ends_at'])): ?>
+                    <div class="lot-item__timer timer">
+                        <?= time_left($lot['ends_at']); ?>
+                    </div>
+                <?php else: ?>
+                    Торги окончены
+                <?php endif; ?>
+
                 <div class="lot-item__cost-state">
                     <div class="lot-item__rate">
-                        <span class="lot-item__amount">Текущая цена</span>
+                        <?php if (!is_time_elapsed($lot['ends_at'])): ?>
+                            <span class="lot-item__amount">Текущая цена</span>
+                        <?php else: ?>
+                            <span class="lot-item__amount">Окончательная цена</span>
+                        <?php endif; ?>
                         <span class="lot-item__cost"><?= format_price($lot['current_price']); ?></span>
                     </div>
-                    <div class="lot-item__min-cost">
-                        Мин. ставка <span><?= format_price($lot['current_price'] + $lot['bid_step']); ?></span>
-                    </div>
+                    <?php if (!is_time_elapsed($lot['ends_at'])): ?>
+                        <div class="lot-item__min-cost">
+                            Мин. ставка <span><?= format_price($lot['current_price'] + $lot['bid_step']); ?></span>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
-                <?php if (isset($_SESSION['user']) and $_SESSION['user']['id'] != $lot['author_id'])   : ?>
+                <?php if (isset($_SESSION['user']) and is_bid_block_shown($_SESSION['user']['id'], $lot['author_id'], $bids) and !is_time_elapsed($lot['ends_at'])): ?>
                     <form class="lot-item__form" method="post" enctype="multipart/form-data">
                         <?php $class = isset($errors['bid']) ? 'form__item--invalid' : '';
                         $value = isset($form['bid']) ? $form['bid'] : ''; ?>

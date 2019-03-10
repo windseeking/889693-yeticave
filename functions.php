@@ -132,7 +132,7 @@ function get_bids_by_lot_id(mysqli $con, int $lot_id): array
     $sql = 'SELECT b.*, u.name as user_name FROM bid b
             JOIN user u ON u.id = b.buyer_id
             WHERE b.lot_id = ' . $lot_id .
-          ' ORDER BY b.created_at DESC';
+        ' ORDER BY b.created_at DESC';
     $res = mysqli_query($con, $sql);
     if ($res) {
         return mysqli_fetch_all($res, MYSQLI_ASSOC);
@@ -203,6 +203,7 @@ function get_lots(mysqli $con): array
     $sql = 'SELECT l.*, COUNT(b.id) AS bids_amount
             FROM lot l
             LEFT JOIN bid b on b.lot_id = l.id
+            WHERE l.ends_at > CURDATE()
             GROUP BY l.id
             ORDER BY l.ends_at';
     $res = mysqli_query($con, $sql);
@@ -225,7 +226,7 @@ function get_lots_by_cat_id(mysqli $con, int $cat_id): array
             FROM lot l 
             JOIN cat c ON c.id = l.cat_id
             LEFT JOIN bid b ON b.lot_id = l.id 
-            WHERE l.cat_id = ?
+            WHERE l.cat_id = ? AND l.ends_at > CURDATE()
             GROUP BY l.id
             ORDER BY created_at DESC';
     $values = [$cat_id];
@@ -283,6 +284,28 @@ function include_template(string $name, array $data)
 }
 
 /**
+ * Проверяет условия для показа блока добавления ставки
+ *
+ * @param int $user_id ID текущего пользователя
+ * @param int $author_id ID автора лота
+ * @param array $bids Массив с данными ставок лота
+ * @return bool Результат проверки: false - если совпадают ID пользователя и автора лота и если пользователь делал ставку, true - в остальных случаях
+ */
+function is_bid_block_shown(int $user_id, int $author_id, array $bids): bool
+{
+    if ($user_id == $author_id) {
+        return false;
+    }
+
+    foreach ($bids as $bid) {
+        if ($bid['buyer_id'] == $user_id) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
  * Проверяет существование категории
  *
  * @param array $cats Массив с данными категории
@@ -332,6 +355,23 @@ function is_email_exist(mysqli $con, string $email): bool
     $values = [$email];
     $user = db_fetch_data($con, $sql, $values);
     if (empty($user)) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Проверяет, истекло ли время торгов по лоту
+ *
+ * @param string $dt_end Дата окончания торгов по лоту
+ * @return bool Результат проверки: true - время истекло, false - время не истекло
+ */
+function is_time_elapsed(string $dt_end): bool
+{
+    $now = strtotime('now');
+    $dt_end = strtotime($dt_end);
+    $diff = $dt_end - $now;
+    if ($diff > 0) {
         return false;
     }
     return true;
