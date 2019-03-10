@@ -9,4 +9,5 @@ require_once('config.php');
 session_start();
 
 $con = get_connection($database_config);
+$user = [];
 $user_name = isset($_SESSION['name']) ? $_SESSION['name'] : '';

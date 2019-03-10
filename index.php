@@ -7,7 +7,7 @@ $lots = [];
 $pagination_data = [];
 
 $cur_page = $_GET['page'] ?? 1;
-$page_lots = 9;
+$page_lots = 19;
 
 $res = mysqli_query($con, 'SELECT COUNT(*) as lots_amount FROM lot');
 $lots_count = mysqli_fetch_assoc($res)['lots_amount'];
@@ -22,6 +22,7 @@ if ($pages_count <= 1) {
     $sql = 'SELECT l.*, c.name AS cat_name, COUNT(b.id) as bids_amount FROM lot l '
         . 'JOIN cat c ON l.cat_id = c.id '
         . 'LEFT JOIN bid b ON b.lot_id = l.id '
+        . 'WHERE l.ends_at > CURDATE() '
         . 'GROUP BY l.id ORDER BY l.created_at DESC LIMIT ' . $page_lots . ' OFFSET ' . $offset;
     $res = mysqli_query($con, $sql);
 

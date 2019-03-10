@@ -4,6 +4,8 @@ require_once('init.php');
 
 if (isset($_SESSION['user'])) {
     $user = $_SESSION['user'];
+} else {
+    $user = [];
 }
 
 $cats = get_cats($con);
