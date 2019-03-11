@@ -4,64 +4,70 @@ require_once('init.php');
 
 if (isset($_SESSION['user'])) {
     $user = $_SESSION['user'];
+    $user_id = (int)$_SESSION['user']['id'];
 }
 
 $cats = get_cats($con);
-$lot = [];
 $errors = [];
+$bids = [];
+$user_id = (int)$_SESSION['user']['id'] ?? '';
 
 if (isset($_GET['id'])) {
     $lot_id = (int)$_GET['id'];
     $lot = get_lot_by_id($con, $lot_id);
-    if (isset($lot)) {
-        $page_title = $lot['title'];
-        $bids = get_bids_by_lot_id($con, $lot_id);
+} else {
+    $page_content = include_template('404.php', ['cats' => $cats]);
+    $page_title = 'Error 404';
+}
+
+if (isset($lot)) {
+    $page_title = $lot['title'];
+    $bids = get_bids_by_lot_id($con, $lot_id);
+    $page_content = include_template('lot.php', [
+        'user_id' => $user_id,
+        'lot' => $lot,
+        'cats' => $cats,
+        'bids' => $bids,
+        'errors' => $errors
+    ]);
+} else {
+    $page_content = include_template('404.php', ['cats' => $cats]);
+    $page_title = 'Error 404';
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $form = $_POST;
+    if (empty($form['bid'])) {
+        $errors['bid'] = "Введите сумму";
         $page_content = include_template('lot.php', [
+            'user_id' => $user_id,
             'lot' => $lot,
             'cats' => $cats,
             'bids' => $bids,
             'errors' => $errors
         ]);
+    } elseif ($form['bid'] <= 0 or !is_numeric($form['bid'])) {
+        $errors['bid'] = 'Введите целое число больше нуля';
+    } elseif ($form['bid'] < ($lot['current_price'] + $lot['bid_step'])) {
+        $errors['bid'] = 'Ставка должна быть больше, чем текущая цена + шаг ставки';
+    }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $form = $_POST;
-            if (empty($form['bid'])) {
-                $errors['bid'] = "Введите сумму";
-                $page_content = include_template('lot.php', [
-                    'lot' => $lot,
-                    'cats' => $cats,
-                    'bids' => $bids,
-                    'errors' => $errors
-                ]);
-            } elseif ($form['bid'] <= 0 or $form['bid'] != intval($form['bid'])) {
-                $errors['bid'] = 'Введите целое число больше нуля';
-            } elseif ($form['bid'] < ($lot['current_price'] + $lot['bid_step'])) {
-                $errors['bid'] = 'Ставка должна быть больше, чем текущая цена + шаг ставки';
-            }
-
-            if (empty($errors)) {
-                $bid = $form['bid'];
-                if (add_bid($con, $bid, $user['id'], $lot_id)) {
-                    if (update_price($con, $bid, $lot_id)) {
-                        header('Location: lot.php?id=' . $lot_id);
-                    }
-                }
-            } else {
-                $page_content = include_template('lot.php', [
-                    'lot' => $lot,
-                    'cats' => $cats,
-                    'bids' => $bids,
-                    'errors' => $errors
-                ]);
+    if (empty($errors)) {
+        $bid = $form['bid'];
+        if (add_bid($con, $bid, $user['id'], $lot_id)) {
+            if (update_price($con, $bid, $lot_id)) {
+                header('Location: lot.php?id=' . $lot_id);
             }
         }
     } else {
-        $page_content = include_template('404.php', ['cats' => $cats]);
-        $page_title = 'Error 404';
+        $page_content = include_template('lot.php', [
+            'user_id' => $user_id,
+            'lot' => $lot,
+            'cats' => $cats,
+            'bids' => $bids,
+            'errors' => $errors
+        ]);
     }
-} else {
-    $page_content = include_template('404.php', ['cats' => $cats]);
-    $page_title = 'Error 404';
 }
 
 $nav_content = include_template('_navigation.php', ['cats' => $cats]);

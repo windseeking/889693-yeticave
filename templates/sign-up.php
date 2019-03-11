@@ -47,7 +47,7 @@
 
     <?php $class = (isset($errors['avatar_url']) ? 'form__item--invalid' : '');
     $value = isset($user['avatar_url']) ? $user['avatar_url'] : ''; ?>
-    <?php if($user['avatar_url']): ?>
+    <?php if ($user['avatar_url']): ?>
     <div class="form__item form__item--file form__item--last form__item--uploaded <?= $class ;?>">
     <?php else: ?>
     <div class="form__item form__item--file form__item--last <?= $class ;?>">

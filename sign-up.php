@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tmp_name = $_FILES['avatar_url']['tmp_name'];
         $img_type = mime_content_type($tmp_name);
         $img_size = $_FILES['avatar_url']['size'];
-        if (($img_type != 'image/jpg') and ($img_type != 'image/jpeg') and ($img_type != 'image/png')) {
+        if (($img_type !== 'image/jpg') and ($img_type !== 'image/jpeg') and ($img_type !== 'image/png')) {
             $errors['avatar_url'] = 'Допустимые форматы файлов: jpg, jpeg, png';
         } elseif ($img_size > 5242880) {
             $errors['avatar_url'] = 'Изображение не должно превышать 5 Мб';

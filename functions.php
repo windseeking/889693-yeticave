@@ -132,7 +132,7 @@ function get_bids_by_lot_id(mysqli $con, int $lot_id): array
     $sql = 'SELECT b.*, u.name as user_name FROM bid b
             JOIN user u ON u.id = b.buyer_id
             WHERE b.lot_id = ' . $lot_id .
-          ' ORDER BY b.created_at DESC';
+        ' ORDER BY b.created_at DESC';
     $res = mysqli_query($con, $sql);
     if ($res) {
         return mysqli_fetch_all($res, MYSQLI_ASSOC);
@@ -294,12 +294,12 @@ function include_template(string $name, array $data)
  */
 function is_bid_block_shown(int $user_id, int $author_id, array $bids): bool
 {
-    if ($user_id == $author_id) {
+    if ($user_id === $author_id) {
         return false;
     }
 
     foreach ($bids as $bid) {
-        if ($bid['buyer_id'] == $user_id) {
+        if ($bid['buyer_id'] === $user_id) {
             return false;
         }
     }
@@ -316,7 +316,7 @@ function is_bid_block_shown(int $user_id, int $author_id, array $bids): bool
 function is_cat_exists(array $cats, array $lot): bool
 {
     foreach ($cats as $cat) {
-        if ($cat['id'] == $lot['cat_id']) {
+        if ($cat['id'] === $lot['cat_id']) {
             return true;
         }
     }
@@ -351,7 +351,7 @@ function is_cat_id_exists(mysqli $con, int $cat_id): bool
 function is_email_exist(mysqli $con, string $email): bool
 {
     $sql = 'SELECT id FROM user ' .
-           'WHERE email = ?';
+        'WHERE email = ?';
     $values = [$email];
     $user = db_fetch_data($con, $sql, $values);
     if (empty($user)) {
@@ -387,7 +387,7 @@ function is_time_elapsed(string $dt_end): bool
 function is_valid_date_format(string $date, string $format = 'Y-m-d'): bool
 {
     $d = DateTime::createFromFormat($format, $date);
-    return $d && $d->format($format) == $date;
+    return $d && $d->format($format) === $date;
 }
 
 /**

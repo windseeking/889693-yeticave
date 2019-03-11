@@ -28,7 +28,7 @@
         <h2>Ничего не найдено по вашему запросу</h2>
         <?php endif; ?>
     </section>
-<!--    --><?php //if (isset($pagination_data)): ?>
-<!--    --><?//= include_template('_pagination.php', $pagination_data) ;?>
-<!--    --><?php //endif; ?>
+<!--    <?php /*if (isset($pagination_data)): */?>
+    <?/*= include_template('_pagination.php', $pagination_data) ;*/?>
+    --><?php /*endif; */?>
 </div>

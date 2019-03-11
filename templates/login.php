@@ -6,7 +6,7 @@
     $value = isset($form['email']) ? $form['email'] : ''; ?>
     <div class="form__item <?= $class; ?>">
         <label for="email">E-mail*</label>
-        <input id="email" type="text" name="email" placeholder="Введите e-mail" value="<?= $value ;?>">
+        <input id="email" type="email" name="email" placeholder="Введите e-mail" value="<?= $value ;?>">
         <?php if (isset($errors['email'])): ?>
             <span class="form__error"><?= $errors['email'] ;?></span>
         <?php endif; ?>

@@ -4,7 +4,8 @@
         <div class="lot-item__content">
             <div class="lot-item__left">
                 <div class="lot-item__image">
-                    <img src="<?= $lot['img_url']; ?>" width="730" height="548" alt="<?= filter_tags($lot['title']); ?>">
+                    <img src="<?= $lot['img_url']; ?>" width="730" height="548"
+                         alt="<?= filter_tags($lot['title']); ?>">
                 </div>
                 <p class="lot-item__category">Категория: <span><?= $lot['cat_name']; ?></span></p>
                 <p class="lot-item__description"><?= filter_tags($lot['description']); ?></p>
@@ -35,8 +36,8 @@
                         <?php endif; ?>
                     </div>
 
-                    <?php if (isset($_SESSION['user']) and is_bid_block_shown($_SESSION['user']['id'],
-                            $lot['author_id'], $bids) and !is_time_elapsed($lot['ends_at'])): ?>
+                    <?php if (isset($_SESSION['user']) and is_bid_block_shown($user_id, $lot['author_id'],
+                            $bids) and !is_time_elapsed($lot['ends_at'])): ?>
                         <form class="lot-item__form" method="post" enctype="multipart/form-data">
                             <?php $class = isset($errors['bid']) ? 'form__item--invalid' : '';
                             $value = isset($form['bid']) ? $form['bid'] : ''; ?>
