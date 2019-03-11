@@ -31,5 +31,4 @@
             <h2>В этой категории пока нет лотов</h2>
         <?php endif; ?>
     </section>
-    <!--    --><? //= include_template('_pagination.php', $pagination_data) ;?>
 </div>

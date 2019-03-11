@@ -38,5 +38,4 @@
             </li>
         <?php endforeach; ?>
     </ul>
-<!--    --><? //= include_template('_pagination.php', $pagination_data) ;?>
 </section>

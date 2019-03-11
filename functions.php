@@ -299,7 +299,7 @@ function is_bid_block_shown(int $user_id, int $author_id, array $bids): bool
     }
 
     foreach ($bids as $bid) {
-        if ($bid['buyer_id'] === $user_id) {
+        if (intval($bid['buyer_id']) === $user_id) {
             return false;
         }
     }

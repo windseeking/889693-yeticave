@@ -49,9 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors['img_url'] = 'Изображение не должно превышать 10 Мб';
         } else {
             $img_name = 'lot' . '-' . uniqid() . '-' . $_FILES['img_url']['name'];
-            $img_path = __DIR__ . '/uploads/';
+            $img_path = __DIR__ . '/img/';
             move_uploaded_file($tmp_name, $img_path . $img_name);
-            $lot['img_url'] = '/uploads/' . $img_name;
+            $lot['img_url'] = '/img/' . $img_name;
         }
     } else {
         $errors['img_url'] = 'Изображение обязательно нужно выбрать';

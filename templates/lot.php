@@ -36,7 +36,7 @@
                         <?php endif; ?>
                     </div>
 
-                    <?php if (isset($_SESSION['user']) and is_bid_block_shown($user_id, $lot['author_id'],
+                    <?php if (isset($_SESSION['user']) and is_bid_block_shown($_SESSION['user']['id'], $lot['author_id'],
                             $bids) and !is_time_elapsed($lot['ends_at'])): ?>
                         <form class="lot-item__form" method="post" enctype="multipart/form-data">
                             <?php $class = isset($errors['bid']) ? 'form__item--invalid' : '';

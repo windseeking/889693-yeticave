@@ -37,9 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors['avatar_url'] = 'Изображение не должно превышать 5 Мб';
         } else {
             $img_name = 'avatar' . '-' . uniqid() . '-' . $_FILES['avatar_url']['name'];
-            $img_path = __DIR__ . '/uploads/';
+            $img_path = __DIR__ . '/img/';
             move_uploaded_file($tmp_name, $img_path . $img_name);
-            $user['avatar_url'] = '/uploads/' . $img_name;
+            $user['avatar_url'] = '/img/' . $img_name;
         }
     }
 

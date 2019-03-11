@@ -4,13 +4,11 @@ require_once('init.php');
 
 if (isset($_SESSION['user'])) {
     $user = $_SESSION['user'];
-    $user_id = (int)$_SESSION['user']['id'];
 }
 
 $cats = get_cats($con);
 $errors = [];
 $bids = [];
-$user_id = (int)$_SESSION['user']['id'] ?? '';
 
 if (isset($_GET['id'])) {
     $lot_id = (int)$_GET['id'];
@@ -24,7 +22,6 @@ if (isset($lot)) {
     $page_title = $lot['title'];
     $bids = get_bids_by_lot_id($con, $lot_id);
     $page_content = include_template('lot.php', [
-        'user_id' => $user_id,
         'lot' => $lot,
         'cats' => $cats,
         'bids' => $bids,
@@ -40,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($form['bid'])) {
         $errors['bid'] = "Введите сумму";
         $page_content = include_template('lot.php', [
-            'user_id' => $user_id,
             'lot' => $lot,
             'cats' => $cats,
             'bids' => $bids,
@@ -54,20 +50,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         $bid = $form['bid'];
-        if (add_bid($con, $bid, $user['id'], $lot_id)) {
-            if (update_price($con, $bid, $lot_id)) {
-                header('Location: lot.php?id=' . $lot_id);
-            }
+        if (add_bid($con, $bid, $user['id'], $lot_id) and update_price($con, $bid, $lot_id)) {
+            header('Location: lot.php?id=' . $lot_id);
+            die();
         }
-    } else {
-        $page_content = include_template('lot.php', [
-            'user_id' => $user_id,
-            'lot' => $lot,
-            'cats' => $cats,
-            'bids' => $bids,
-            'errors' => $errors
-        ]);
+        $errors['bid'] = 'Ставка не добавлена. Повторите попытку позже.';
     }
+    $page_content = include_template('lot.php', [
+        'lot' => $lot,
+        'cats' => $cats,
+        'bids' => $bids,
+        'errors' => $errors
+    ]);
 }
 
 $nav_content = include_template('_navigation.php', ['cats' => $cats]);
