@@ -3,19 +3,19 @@
     <h2>Добавление лота</h2>
     <div class="form__container-two">
 
-        <?php $class = isset($errors['title']) ? 'form__item--invalid' : '';
-        $value = isset($lot['title']) ? $lot['title'] : ''; ?>
+        <?php $class = !empty($errors['title']) ? 'form__item--invalid' : '';
+        $value = !empty($lot['title']) ? $lot['title'] : ''; ?>
         <div class="form__item <?= $class; ?>">
             <label for="lot-name">Наименование</label>
             <input id="lot-name" type="text" name="lot[title]" placeholder="Введите наименование лота"
                    value="<?= $value; ?>">
-            <?php if (isset($errors['title'])): ?>
+            <?php if (!empty($errors['title'])): ?>
                 <span class="form__error">Введите наименование лота</span>
             <?php endif; ?>
         </div>
 
-        <?php $class = isset($errors['cat_id']) ? 'form__item--invalid' : '';
-        $value = isset($lot['cat_id']) ? $lot['cat_id'] : ''; ?>
+        <?php $class = !empty($errors['cat_id']) ? 'form__item--invalid' : '';
+        $value = !empty($lot['cat_id']) ? $lot['cat_id'] : ''; ?>
         <div class="form__item <?= $class; ?>">
             <label for="category">Категория</label>
             <select id="category" name="lot[cat_id]">
@@ -25,26 +25,26 @@
                         value="<?= $cat['id']; ?>"><?= $cat['name']; ?></option>
                 <?php endforeach; ?>
             </select>
-            <?php if (isset($errors['cat_id'])): ?>
+            <?php if (!empty($errors['cat_id'])): ?>
                 <span class="form__error"><?= $errors['cat_id']; ?></span>
             <?php endif; ?>
         </div>
     </div>
 
-    <?php $class = isset($errors['description']) ? 'form__item--invalid' : '';
-    $value = isset($lot['description']) ? $lot['description'] : ''; ?>
+    <?php $class = !empty($errors['description']) ? 'form__item--invalid' : '';
+    $value = !empty($lot['description']) ? $lot['description'] : ''; ?>
     <div class="form__item form__item--wide <?= $class; ?>">
         <label for="message">Описание</label>
         <textarea class="<?= $class; ?>" id="message" name="lot[description]"
                   placeholder="Напишите описание лота"><?= $value; ?></textarea>
-        <?php if (isset($errors['description'])): ?>
+        <?php if (!empty($errors['description'])): ?>
             <span class="form__error">Напишите описание лота</span>
         <?php endif; ?>
     </div>
 
-    <?php $class = (isset($errors['img_url']) ? 'form__item--invalid' : '');
-    $value = isset($lot['img_url']) ? $lot['img_url'] : ''; ?>
-    <?php if (isset($lot['img_url'])): ?>
+    <?php $class = (!empty($errors['img_url']) ? 'form__item--invalid' : '');
+    $value = !empty($lot['img_url']) ? $lot['img_url'] : ''; ?>
+    <?php if (!empty($lot['img_url'])): ?>
     <div class="form__item form__item--file form__item--uploaded <?= $class; ?>">
         <?php else: ?>
         <div class="form__item form__item--file <?= $class; ?>">
@@ -62,43 +62,43 @@
                     <span>+ Добавить</span>
                 </label>
             </div>
-            <?php if (isset($errors['img_url'])): ?>
+            <?php if (!empty($errors['img_url'])): ?>
                 <span class="form__error"><?= $errors['img_url']; ?></span>
             <?php endif; ?>
         </div>
 
         <div class="form__container-three">
-            <?php $class = isset($errors['opening_price']) ? 'form__item--invalid' : '';
-            $value = isset($lot['opening_price']) ? $lot['opening_price'] : ''; ?>
+            <?php $class = !empty($errors['opening_price']) ? 'form__item--invalid' : '';
+            $value = !empty($lot['opening_price']) ? $lot['opening_price'] : ''; ?>
             <div class="form__item form__item--small <?= $class; ?>">
                 <label for="lot-rate">Начальная цена</label>
                 <input id="lot-rate" type="number" name="lot[opening_price]" placeholder="0" value="<?= $value; ?>">
-                <?php if (isset($errors['opening_price'])): ?>
+                <?php if (!empty($errors['opening_price'])): ?>
                     <span class="form__error"><?= $errors['opening_price']; ?></span>
                 <?php endif; ?>
             </div>
 
-            <?php $class = isset($errors['bid_step']) ? 'form__item--invalid' : '';
-            $value = isset($lot['bid_step']) ? $lot['bid_step'] : ''; ?>
+            <?php $class = !empty($errors['bid_step']) ? 'form__item--invalid' : '';
+            $value = !empty($lot['bid_step']) ? $lot['bid_step'] : ''; ?>
             <div class="form__item form__item--small <?= $class; ?>">
                 <label for="lot-step">Шаг ставки</label>
                 <input id="lot-step" type="number" name="lot[bid_step]" placeholder="0" value="<?= $value; ?>">
-                <?php if (isset($errors['bid_step'])): ?>
+                <?php if (!empty($errors['bid_step'])): ?>
                     <span class="form__error"><?= $errors['bid_step']; ?></span>
                 <?php endif; ?>
             </div>
 
-            <?php $class = isset($errors['ends_at']) ? 'form__item--invalid' : '';
-            $value = isset($lot['ends_at']) ? $lot['ends_at'] : ''; ?>
+            <?php $class = !empty($errors['ends_at']) ? 'form__item--invalid' : '';
+            $value = !empty($lot['ends_at']) ? $lot['ends_at'] : ''; ?>
             <div class="form__item <?= $class; ?>">
                 <label for="lot-date">Дата окончания торгов</label>
                 <input class="form__input-date" id="lot-date" type="date" name="lot[ends_at]" value="<?= $value; ?>">
-                <?php if (isset($errors['ends_at'])): ?>
+                <?php if (!empty($errors['ends_at'])): ?>
                     <span class="form__error"><?= $errors['ends_at']; ?></span>
                 <?php endif; ?>
             </div>
         </div>
-        <?php if (count($errors) or isset($_SESSION['error'])): ?>
+        <?php if (count($errors) || !empty($_SESSION['error'])): ?>
             <span class="form__error form__error--bottom"><?= $_SESSION['error'];
                 unset($_SESSION['error']); ?></span>
         <?php endif; ?>

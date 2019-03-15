@@ -15,12 +15,12 @@
                 <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
             </a>
             <form class="main-header__search" method="get" action="search.php">
-                <?php $value = isset($_GET['search']) ? $_GET['search'] : '' ;?>
-                <input type="search" name="search" value="<?= $value ;?>" placeholder="Поиск лота">
+                <?php $value = !empty($_GET['search']) ? $_GET['search'] : ''; ?>
+                <input type="search" name="search" value="<?= $value; ?>" placeholder="Поиск лота">
                 <input class="main-header__search-btn" type="submit">
             </form>
 
-            <?php if (isset($_SESSION['user'])): ?>
+            <?php if (!empty($_SESSION['user'])): ?>
             <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
 
             <nav class="user-menu">
@@ -28,22 +28,22 @@
                     <p><?= filter_tags($_SESSION['user']['name']); ?></p>
                     <a href="../logout.php">Выход</a>
                 </div>
-            <?php else: ?>
-            <nav class="user-menu">
-                <ul class="user-menu__list">
-                    <li class="user-menu__item">
-                        <a href="/sign-up.php">Регистрация</a>
-                    </li>
-                    <li class="user-menu__item">
-                        <a href="/login.php">Вход</a>
-                    </li>
-                </ul>
-            <?php endif; ?>
-            </nav>
+                <?php else: ?>
+                <nav class="user-menu">
+                    <ul class="user-menu__list">
+                        <li class="user-menu__item">
+                            <a href="/sign-up.php">Регистрация</a>
+                        </li>
+                        <li class="user-menu__item">
+                            <a href="/login.php">Вход</a>
+                        </li>
+                    </ul>
+                    <?php endif; ?>
+                </nav>
         </div>
     </header>
 
-    <?php if (isset($nav)): ?>
+    <?php if (!empty($nav)): ?>
         <?= $nav; ?>
     <?php endif; ?>
 

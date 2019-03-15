@@ -2,7 +2,7 @@
 
 require_once('init.php');
 
-if (!isset($_SESSION['user'])) {
+if (empty($_SESSION['user'])) {
     http_response_code(403);
     exit();
 }
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if (!empty($lot['cat_id']) and !is_cat_exists($cats, $lot)) {
+    if (!empty($lot['cat_id']) && !is_cat_exists($cats, $lot)) {
         $errors['cat_id'] = 'Выберите существующую категорию';
     }
     if (!empty($lot['ends_at'])) {
@@ -33,17 +33,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors['ends_at'] = 'Дата должна быть больше текущей хотя бы на 1 день';
         }
     }
-    if (!empty($lot['opening_price']) and $lot['opening_price'] <= 0) {
+    if (!empty($lot['opening_price']) && $lot['opening_price'] <= 0) {
         $errors['opening_price'] = 'Введите число больше нуля';
     }
-    if (!empty($lot['bid_step']) and $lot['bid_step'] <= 0 or $lot['bid_step'] != intval($lot['bid_step'])) {
+    if (!empty($lot['bid_step']) && $lot['bid_step'] <= 0 || $lot['bid_step'] != intval($lot['bid_step'])) {
         $errors['bid_step'] = 'Введите целое число больше нуля';
     }
     if (!empty($_FILES['img_url']['name'])) {
         $tmp_name = $_FILES['img_url']['tmp_name'];
         $img_type = mime_content_type($tmp_name);
         $img_size = $_FILES['img_url']['size'];
-        if (($img_type !== 'image/jpg') and ($img_type !== 'image/jpeg') and ($img_type !== 'image/png')) {
+        if (($img_type !== 'image/jpg') && ($img_type !== 'image/jpeg') && ($img_type !== 'image/png')) {
             $errors['img_url'] = 'Допустимые форматы файлов: jpg, jpeg, png';
         } elseif ($img_size > 10485760) {
             $errors['img_url'] = 'Изображение не должно превышать 10 Мб';

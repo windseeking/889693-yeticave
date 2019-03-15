@@ -2,7 +2,7 @@
 
 require_once('init.php');
 
-if (isset($_SESSION['user'])) {
+if (!empty($_SESSION['user'])) {
     header("Location: index.php");
     exit();
 };
@@ -23,6 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($form['email'])) {
         $errors['email'] = 'Введите email';
+    } elseif (!filter_var($form['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Неверный формат email-адреса';
     } else {
         $email = mysqli_real_escape_string($con, $form['email']);
         $sql = "SELECT * FROM user WHERE email = '$email'";

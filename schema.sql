@@ -9,7 +9,7 @@ set foreign_key_checks = 0;
 CREATE TABLE IF NOT EXISTS `user`
 (
   `id`           int unsigned                           NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `created_at`   timestamp    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  `created_at`   datetime     DEFAULT CURRENT_TIMESTAMP NOT NULL,
   `email`        char(255)                              NOT NULL UNIQUE KEY,
   `name`         char(255)                              NOT NULL,
   `password`     char(255)                              NOT NULL,
@@ -32,13 +32,13 @@ CREATE TABLE IF NOT EXISTS `cat`
 CREATE TABLE IF NOT EXISTS `lot`
 (
   `id`            int unsigned                           NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `created_at`    timestamp    DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  `created_at`    datetime     DEFAULT CURRENT_TIMESTAMP NOT NULL,
   `title`         char(255)                              NOT NULL,
   `description`   varchar(1000)                          NOT NULL,
   `img_url`       char(255)                              NOT NULL,
   `opening_price` int unsigned                           NOT NULL,
   `current_price` int unsigned DEFAULT NULL,
-  `ends_at`       timestamp                              NOT NULL,
+  `ends_at`       datetime                               NOT NULL,
   `bid_step`      int unsigned                           NOT NULL,
   `winner_id`     int unsigned DEFAULT NULL,
   `author_id`     int unsigned                           NOT NULL,
@@ -55,15 +55,15 @@ CREATE TABLE IF NOT EXISTS `lot`
 
 CREATE TABLE IF NOT EXISTS `bid`
 (
-  `id`          int unsigned                        NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `created_at`  timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  `buyer_price` int unsigned                        NOT NULL,
-  `buyer_id`    int unsigned                        NOT NULL,
-  `lot_id`      int unsigned                        NOT NULL,
+  `id`          int unsigned                       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `created_at`  datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  `buyer_price` int unsigned                       NOT NULL,
+  `buyer_id`    int unsigned                       NOT NULL,
+  `lot_id`      int unsigned                       NOT NULL,
   KEY bid_buyer_id_fk (buyer_id),
   KEY bid_lot_id_fk (lot_id),
   CONSTRAINT bid_buyer_id_fk FOREIGN KEY (buyer_id) REFERENCES user (id),
   CONSTRAINT bid_lot_id_fk FOREIGN KEY (lot_id) REFERENCES lot (id)
 );
 
-CREATE FULLTEXT INDEX lots_ft_search ON lot(title, description);
+CREATE FULLTEXT INDEX lots_ft_search ON lot (title, description);

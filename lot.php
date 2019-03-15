@@ -2,7 +2,7 @@
 
 require_once('init.php');
 
-if (isset($_SESSION['user'])) {
+if (!empty($_SESSION['user'])) {
     $user = $_SESSION['user'];
 }
 
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'bids' => $bids,
             'errors' => $errors
         ]);
-    } elseif ($form['bid'] <= 0 or !is_numeric($form['bid'])) {
+    } elseif ($form['bid'] <= 0 || $form['bid'] != intval($form['bid'])) {
         $errors['bid'] = 'Введите целое число больше нуля';
     } elseif ($form['bid'] < ($lot['current_price'] + $lot['bid_step'])) {
         $errors['bid'] = 'Ставка должна быть больше, чем текущая цена + шаг ставки';
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         $bid = $form['bid'];
-        if (add_bid($con, $bid, $user['id'], $lot_id) and update_price($con, $bid, $lot_id)) {
+        if (!empty($user) && add_bid($con, $bid, $user['id'], $lot_id) && update_price($con, $bid, $lot_id)) {
             header('Location: lot.php?id=' . $lot_id);
             die();
         }

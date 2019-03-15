@@ -1,5 +1,5 @@
 <section class="lot-item container">
-    <?php if (isset($lot)): ?>
+    <?php if (!empty($lot)): ?>
         <h2><?= filter_tags($lot['title']); ?></h2>
         <div class="lot-item__content">
             <div class="lot-item__left">
@@ -36,17 +36,17 @@
                         <?php endif; ?>
                     </div>
 
-                    <?php if (isset($_SESSION['user']) and is_bid_block_shown($_SESSION['user']['id'], $lot['author_id'],
-                            $bids) and !is_time_elapsed($lot['ends_at'])): ?>
+                    <?php if (!empty($_SESSION['user']) && is_bid_block_shown($_SESSION['user']['id'],
+                            $lot['author_id'], $bids) && !is_time_elapsed($lot['ends_at'])): ?>
                         <form class="lot-item__form" method="post" enctype="multipart/form-data">
-                            <?php $class = isset($errors['bid']) ? 'form__item--invalid' : '';
-                            $value = isset($form['bid']) ? $form['bid'] : ''; ?>
+                            <?php $class = !empty($errors['bid']) ? 'form__item--invalid' : '';
+                            $value = !empty($form['bid']) ? $form['bid'] : ''; ?>
                             <p class="lot-item__form-item form__item <?= $class; ?>">
                                 <label for="cost">Ваша ставка</label>
                                 <input id="cost" type="text" name="bid"
                                        placeholder="<?= $lot['current_price'] + $lot['bid_step']; ?>"
                                        value="<?= $value; ?>">
-                                <?php if (isset($errors['bid'])): ?>
+                                <?php if (!empty($errors['bid'])): ?>
                                     <span class="form__error"><?= $errors['bid']; ?></span>
                                 <?php endif; ?>
                             </p>
@@ -55,7 +55,7 @@
                     <?php endif; ?>
                 </div>
 
-                <?php if (isset($bids)): ?>
+                <?php if (!empty($bids)): ?>
                     <div class="history">
                         <h3>История ставок (<span><?= count($bids); ?></span>)</h3>
                         <table class="history__list">

@@ -2,7 +2,7 @@
 
 require_once('init.php');
 
-if (isset($_SESSION['user'])) {
+if (!empty($_SESSION['user'])) {
     $user = $_SESSION['user'];
 }
 
@@ -35,10 +35,13 @@ if (isset($_GET['search'])) {
     $page_title = 'Error 404';
 }
 
+$nav_content = include_template('_navigation.php', ['cats' => $cats]);
+
 $layout_content = include_template('layout.php', [
     'content' => $page_content,
     'title' => $page_title,
-    'cats' => $cats
+    'cats' => $cats,
+    'nav' => $nav_content
 ]);
 
 print($layout_content);

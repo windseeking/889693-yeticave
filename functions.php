@@ -433,13 +433,13 @@ function time_passed(string $date)
     $now = date_create('now');
     $date = date_create($date);
 
-    if ($diff < 86400 and $diff > 3540) {
+    if ($diff < 86400 && $diff > 3540) {
         $diff = date_diff($now, $date);
         return date_interval_format($diff, "%hч %iм") . ' назад';
     } elseif ($diff < 60) {
         $diff = date_diff($now, $date);
         return date_interval_format($diff, "%sс") . ' назад';
-    } elseif ($diff > 60 and $diff < 86400) {
+    } elseif ($diff > 60 && $diff < 86400) {
         $diff = date_diff($now, $date);
         return date_interval_format($diff, "%iм") . ' назад';
     } else {
